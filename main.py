@@ -2,7 +2,7 @@ from servicios.restaurante import Restaurante
 
 
 def mostrar_menu() -> None:
-    print("\n===== RESTAURANTE APP - SEMANA 11 =====")
+    print("\n===== RESTAURANTE APP - SEMANA 12 =====")
     print("1. Registrar usuario")
     print("2. Registrar producto")
     print("3. Mostrar usuarios")
