@@ -10,9 +10,40 @@ class Restaurante:
         self._usuarios: list[Usuario] = []
         self._ventas: list[Venta] = []
 
+        # Índices auxiliares para mejorar el rendimiento
+        self._productos_por_codigo: dict[str, Producto] = {}
+        self._usuarios_por_identificacion: dict[str, Usuario] = {}
+        self._ventas_por_usuario: dict[str, list[Venta]] = {}
+
         self._archivo_servicio = ArchivoServicio()
 
         self.cargar_datos()
+
+        # Reconstruir los índices después de cargar los datos
+        self.reconstruir_indices()
+
+    # ==============================
+    # ÍNDICES AUXILIARES
+    # ==============================
+
+    def reconstruir_indices(self) -> None:
+        self._productos_por_codigo = {
+            producto.codigo: producto
+            for producto in self._productos
+        }
+
+        self._usuarios_por_identificacion = {
+            usuario.identificacion: usuario
+            for usuario in self._usuarios
+        }
+
+        self._ventas_por_usuario = {}
+
+        for venta in self._ventas:
+            if venta.usuario_id not in self._ventas_por_usuario:
+                self._ventas_por_usuario[venta.usuario_id] = []
+
+            self._ventas_por_usuario[venta.usuario_id].append(venta)
 
     # ==============================
     # PRODUCTOS
@@ -37,17 +68,20 @@ class Restaurante:
         )
 
         self._productos.append(producto)
+
+        # Actualizar índice de productos
+        self._productos_por_codigo[producto.codigo] = producto
+
         self.guardar_productos()
 
         return True
 
     def buscar_producto(self, codigo: str) -> Producto | None:
 
-        for producto in self._productos:
-            if producto.codigo == codigo:
-                return producto
-
-        return None
+        # Búsqueda rápida mediante diccionario
+        return self._productos_por_codigo.get(
+            codigo.strip()
+        )
 
     def listar_productos(self) -> list[Producto]:
         return self._productos.copy()
@@ -71,6 +105,12 @@ class Restaurante:
         )
 
         self._usuarios.append(usuario)
+
+        # Actualizar índice de usuarios
+        self._usuarios_por_identificacion[
+            usuario.identificacion
+        ] = usuario
+
         self.guardar_usuarios()
 
         return True
@@ -80,11 +120,10 @@ class Restaurante:
         identificacion: str
     ) -> Usuario | None:
 
-        for usuario in self._usuarios:
-            if usuario.identificacion == identificacion:
-                return usuario
-
-        return None
+        # Búsqueda rápida mediante diccionario
+        return self._usuarios_por_identificacion.get(
+            identificacion.strip()
+        )
 
     def listar_usuarios(self) -> list[Usuario]:
         return self._usuarios.copy()
@@ -100,6 +139,7 @@ class Restaurante:
         cantidad: int
     ) -> bool:
 
+        # Las búsquedas utilizan los índices auxiliares
         usuario = self.buscar_usuario(
             identificacion_usuario
         )
@@ -125,6 +165,17 @@ class Restaurante:
 
         self._ventas.append(venta)
 
+        # Actualizar índice de ventas por usuario
+        if usuario.identificacion not in self._ventas_por_usuario:
+            self._ventas_por_usuario[
+                usuario.identificacion
+            ] = []
+
+        self._ventas_por_usuario[
+            usuario.identificacion
+        ].append(venta)
+
+        # Actualizar stock
         producto.vender(cantidad)
 
         self.guardar_ventas()
@@ -137,14 +188,11 @@ class Restaurante:
         identificacion_usuario: str
     ) -> list[Venta]:
 
-        ventas_usuario: list[Venta] = []
-
-        for venta in self._ventas:
-
-            if venta.usuario_id == identificacion_usuario:
-                ventas_usuario.append(venta)
-
-        return ventas_usuario
+        # Consulta rápida mediante índice
+        return self._ventas_por_usuario.get(
+            identificacion_usuario.strip(),
+            []
+        ).copy()
 
     def listar_ventas(self) -> list[Venta]:
         return self._ventas.copy()

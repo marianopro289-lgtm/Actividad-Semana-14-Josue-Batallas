@@ -1,165 +1,105 @@
-# Restaurante App - Semana 11
+# Restaurante App - Semana 12
 
-## Nombre del estudiante
-
-**Josue Batallas**
+**Nombre:** Josue Batallas  
+**Materia:** Programación Orientada a Objetos  
+**Actividad:** Semana 12
 
 ## Descripción del proyecto
 
-En esta actividad continué trabajando en el proyecto `restaurante_app` que había realizado anteriormente usando Python y programación orientada a objetos.
+Este proyecto es una continuación del sistema `restaurante_app` que realicé en la Semana 11.
 
-En esta nueva versión agregué el manejo de ventas, el control de stock y la persistencia de los datos mediante archivos JSON.
+El sistema permite registrar usuarios, registrar productos, realizar ventas, consultar las ventas de un usuario y controlar el stock de los productos.
 
-El sistema permite registrar usuarios y productos, realizar ventas, consultar las ventas de un usuario y mostrar todas las ventas registradas.
+En esta semana mantuve la estructura que ya tenía y realicé mejoras en la forma en que el programa busca y consulta la información. La idea principal fue evitar recorrer las listas completas cuando ya se conoce un código o una identificación.
 
-El proyecto está organizado por módulos para mantener cada parte del programa separada y facilitar su mantenimiento.
+## Mejoras realizadas
+
+La principal mejora fue agregar diccionarios como índices en memoria para hacer más rápidas algunas búsquedas.
+
+Se mantienen las listas de productos, usuarios y ventas porque siguen siendo necesarias para almacenar los objetos, mostrarlos y guardar la información en los archivos JSON.
+
+### Búsqueda de productos
+
+Antes, para buscar un producto por su código se recorría toda la lista de productos.
+
+Ahora se utiliza un diccionario llamado:
+
+`_productos_por_codigo`
+
+El código del producto funciona como clave y el objeto `Producto` queda como valor. De esta manera, cuando necesito buscar un producto, puedo obtenerlo directamente usando su código.
+
+### Búsqueda de usuarios
+
+También se mejoró la búsqueda de usuarios mediante el diccionario:
+
+`_usuarios_por_identificacion`
+
+La identificación del usuario se utiliza como clave. Esto permite encontrar un usuario sin tener que recorrer todos los usuarios registrados.
+
+### Consulta de ventas por usuario
+
+También mejoré la consulta de ventas. Para esto utilicé el diccionario:
+
+`_ventas_por_usuario`
+
+En este diccionario cada usuario tiene asociada una lista con sus ventas.
+
+Así, cuando se quieren consultar las ventas de un usuario, no es necesario revisar todas las ventas registradas. Se puede acceder directamente a las ventas relacionadas con esa identificación.
+
+## Colecciones utilizadas
+
+En el proyecto se utilizan principalmente:
+
+- **Listas:** se mantienen para almacenar productos, usuarios y ventas, además de permitir recorrerlos, listarlos y guardarlos en JSON.
+- **Diccionarios:** se utilizan como índices para mejorar las búsquedas y consultas frecuentes.
+- **Set:** no fue necesario utilizarlo porque en este proyecto no encontré una validación donde aportara una mejora real.
+
+Los diccionarios utilizados son:
+
+- `_productos_por_codigo`
+- `_usuarios_por_identificacion`
+- `_ventas_por_usuario`
+
+## Sincronización de los índices
+
+Los índices se actualizan cuando se agregan nuevos usuarios o productos.
+
+También se actualiza el índice de ventas cuando se realiza una nueva venta.
+
+Además, al iniciar el programa se cargan los datos guardados en los archivos JSON y después se reconstruyen nuevamente los índices. Esto permite que los diccionarios tengan la información actual aunque el programa se haya cerrado anteriormente.
+
+## Persistencia de datos
+
+El proyecto mantiene la persistencia mediante archivos JSON:
+
+- `productos.json`
+- `usuarios.json`
+- `ventas.json`
+
+Los datos se guardan cuando se registran productos, usuarios o ventas, y pueden recuperarse nuevamente al ejecutar el programa.
+
+## Control de stock
+
+El control de stock se mantiene igual que en la versión anterior.
+
+Cuando se realiza una venta, primero se verifica que el usuario y el producto existan y que haya suficiente stock. Después se registra la venta y se descuenta la cantidad vendida del stock del producto.
 
 ## Estructura del proyecto
 
 ```text
 restaurante_app/
-│
 ├── datos/
 │   ├── productos.json
 │   ├── usuarios.json
 │   └── ventas.json
-│
 ├── modelos/
 │   ├── __init__.py
 │   ├── producto.py
 │   ├── usuario.py
 │   └── venta.py
-│
 ├── servicios/
 │   ├── __init__.py
 │   ├── archivo_servicio.py
 │   └── restaurante.py
-│
 ├── main.py
 └── README.md
-```
-
-## Funcionalidades
-
-El sistema cuenta con las siguientes funciones:
-
-* Registrar usuarios.
-* Registrar productos.
-* Mostrar usuarios registrados.
-* Mostrar productos registrados.
-* Realizar ventas.
-* Consultar las ventas realizadas por un usuario.
-* Mostrar todas las ventas.
-* Validar que la cantidad de productos sea mayor que cero.
-* Verificar que exista suficiente stock antes de realizar una venta.
-* Disminuir el stock cuando la venta se realiza correctamente.
-* Guardar la información en archivos JSON.
-* Recuperar la información guardada cuando se inicia nuevamente el programa.
-
-## Mejoras realizadas
-
-En esta semana agregué el modelo `Venta`, que permite relacionar un usuario con un producto y registrar la cantidad comprada.
-
-También agregué el archivo `ventas.json`, donde se guardan las ventas realizadas. Además, se mantienen los archivos `productos.json` y `usuarios.json` para guardar los productos y usuarios registrados.
-
-Otra mejora fue implementar el control del stock. Antes de registrar una venta, el programa verifica que el producto y el usuario existan, que la cantidad sea válida y que haya suficiente stock.
-
-Cuando la venta es válida, se registra la venta y se descuenta la cantidad correspondiente del stock del producto.
-
-También agregué una función para consultar las ventas realizadas por un usuario utilizando la colección de objetos `Venta`.
-
-## Uso de programación orientada a objetos
-
-El proyecto utiliza diferentes clases para representar los elementos principales del sistema:
-
-* `Producto`: representa los productos del restaurante y controla su precio y stock.
-* `Usuario`: representa a los usuarios registrados.
-* `Venta`: relaciona un usuario con un producto y almacena la cantidad vendida.
-* `Restaurante`: administra las colecciones de productos, usuarios y ventas.
-
-Las ventas se almacenan como objetos `Venta` dentro de una colección, lo que permite recorrerlas y filtrarlas para consultar las ventas de un usuario específico.
-
-## Persistencia de datos
-
-Para evitar que los datos se pierdan al cerrar el programa, utilicé archivos JSON.
-
-Los archivos utilizados son:
-
-* `productos.json`: almacena los productos y su stock.
-* `usuarios.json`: almacena los usuarios registrados.
-* `ventas.json`: almacena las ventas realizadas.
-
-Cuando vuelvo a ejecutar el programa, los datos guardados en estos archivos se cargan nuevamente.
-
-## Manejo de errores
-
-El programa cuenta con validaciones para evitar operaciones incorrectas.
-
-Por ejemplo:
-
-* No se permite registrar cantidades menores o iguales a cero.
-* No se puede vender una cantidad mayor al stock disponible.
-* Se verifica que el usuario exista antes de realizar una venta.
-* Se verifica que el producto exista antes de realizar una venta.
-* Se controlan errores al leer archivos JSON.
-* Se controlan errores de permisos al leer o escribir archivos.
-
-Esto permite que el programa pueda manejar errores previsibles sin cerrarse de manera inesperada.
-
-## Ejecución en Visual Studio Code
-
-Para trabajar con el proyecto utilicé **Visual Studio Code**.
-
-Primero se debe abrir la carpeta `restaurante_app` en Visual Studio Code.
-
-Después se abre la terminal integrada de Visual Studio Code y se ejecuta:
-
-```bash
-python main.py
-```
-
-Al ejecutar el programa aparece un menú con las diferentes opciones disponibles.
-
-## Pruebas realizadas
-
-Para comprobar el funcionamiento del sistema realicé diferentes pruebas.
-
-### Registro de usuario
-
-Registré un usuario indicando su identificación y nombre. El sistema confirmó que el usuario fue registrado correctamente y la información quedó guardada en `usuarios.json`.
-
-### Registro de producto
-
-Registré un producto indicando su código, nombre, precio y stock. El sistema confirmó el registro y guardó la información en `productos.json`.
-
-### Realización de una venta
-
-Realicé una venta indicando el código del producto, la identificación del usuario y la cantidad.
-
-Cuando los datos fueron correctos y existía suficiente stock, el sistema registró la venta correctamente y disminuyó el stock del producto.
-
-### Validación de stock
-
-También probé realizar una venta con una cantidad mayor al stock disponible.
-
-El sistema rechazó la venta y no realizó ningún descuento en el stock.
-
-### Consulta de ventas
-
-Después de realizar una venta, utilicé la opción de consultar las ventas por usuario.
-
-El sistema recorrió la colección de ventas y mostró las ventas correspondientes al usuario seleccionado.
-
-### Persistencia
-
-Finalmente, cerré el programa y lo ejecuté nuevamente desde Visual Studio Code.
-
-Los usuarios, productos y ventas permanecieron guardados, demostrando que la información se estaba almacenando correctamente en los archivos JSON.
-
-## Conclusión
-
-Con esta actividad pude continuar mejorando el sistema del restaurante y aplicar nuevos conceptos de programación orientada a objetos.
-
-La implementación de la clase `Venta` permitió relacionar usuarios y productos, mientras que el control de stock ayudó a evitar ventas que no se pueden realizar.
-
-También aprendí a utilizar archivos JSON para guardar y recuperar información y a manejar diferentes errores mediante excepciones.
