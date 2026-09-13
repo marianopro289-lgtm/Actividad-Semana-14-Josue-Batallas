@@ -1,10 +1,12 @@
 [
     {
         "identificacion": "Josue",
-        "nombre": "Josue Batallas"
+        "nombre": "Josue Batallas",
+        "contrasena": "1234"
     },
     {
         "identificacion": "Jos",
-        "nombre": "Josue"
+        "nombre": "Josue",
+        "contrasena": "1234"
     }
 ]
