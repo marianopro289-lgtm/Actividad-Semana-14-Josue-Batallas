@@ -60,3 +60,51 @@ class RestauranteServicio:
 
     def cantidad_productos(self):
         return len(self.productos)
+
+    def registrar_producto(self, codigo, nombre, precio, stock):
+        nuevo_producto = Producto(
+            codigo,
+            nombre,
+            precio,
+            stock
+        )
+
+        self.productos.append(nuevo_producto)
+        self.guardar_productos()
+
+    def actualizar_producto(self, codigo, nombre, precio, stock):
+        for producto in self.productos:
+            if producto.codigo == codigo:
+                producto.nombre = nombre
+                producto.precio = precio
+                producto.stock = stock
+
+                self.guardar_productos()
+                return True
+
+        return False
+
+    def eliminar_producto(self, codigo):
+        for producto in self.productos:
+            if producto.codigo == codigo:
+                self.productos.remove(producto)
+                self.guardar_productos()
+                return True
+
+        return False
+
+    def guardar_productos(self):
+        datos = []
+
+        for producto in self.productos:
+            datos.append({
+                "codigo": producto.codigo,
+                "nombre": producto.nombre,
+                "precio": producto.precio,
+                "stock": producto.stock
+            })
+
+        self.archivo_servicio.guardar_json(
+            "datos/productos.json",
+            datos
+        )
